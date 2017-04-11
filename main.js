@@ -20,7 +20,7 @@ $(document).ready(function(){
 
   var renderer, scene, camera;
 
-  var dir; // you are looking alpha degrees east
+  var dir = 0; // you are looking alpha degrees east
   var lat;
   var lng;
 
@@ -64,9 +64,8 @@ $(document).ready(function(){
 
     var alpha = e.alpha;
     var compass = e.webkitCompassHeading;
-    dir = (typeof compass === 'number') ? compass : - alpha;
 
-    cameraLookAtUpd();
+    dir = (typeof compass === 'number') ? compass : - alpha;
   }
 
   function addCube(color, pt) {
@@ -107,15 +106,7 @@ $(document).ready(function(){
       console.log('lng: ', lng);
 
       cameraPos(lat, lng, 0);
-      render();
     });
-  }
-
-  function cameraLookAtUpd() {
-    console.log('cameraLookAtUpd');
-
-    cameraLookAt(dir);
-    render();
   }
 
   function cameraPos(lat, lng, height) {
@@ -140,6 +131,10 @@ $(document).ready(function(){
   }
 
   function render() {
+    requestAnimationFrame(render);
+
+    cameraLookAt(dir);
+
     renderer.render(scene, camera);
   }
 
