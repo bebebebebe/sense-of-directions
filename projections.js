@@ -21,7 +21,7 @@
   }
 
   // calculate east, north relative to map origin
-  window.coordsMap = function(lat, lng) {
+  function coordsMap(lat, lng) {
     var coords = coordsWorld(lat, lng);
 
     var east = coords.east - originCoords.east;
@@ -29,5 +29,7 @@
 
     return {east: east, north: north};
   }
+
+  window.coordsMap = coordsMap;
 
 }(this));

@@ -1,3 +1,8 @@
+// convience, for demo
+eg_lat = 40.731716;
+eg_lng = -73.991496;
+
+
 $(document).ready(function(){
   $update = $('#update');
 
@@ -6,18 +11,25 @@ $(document).ready(function(){
   var GREEN = 0x00ff00;
   var PURPLE = 0x936693;
   var ORANGE = 0xf78909;
+  var MAROON = 0x512544;
 
   var PT_1 = {lat: 40.714234, lng: -74.006323}// broadway and chambers
   var PT_2 = {lat: 40.731716, lng: -73.991496} // broadway and 10th
   var PT_3 = {lat: 40.728350, lng: -74.002804} // 6th and houston
+  var PT_4 = {lat: 40.7329915, lng: -73.9879134}; // 13th and 3rd
 
   var renderer, scene, camera;
+
+  var dir; // you are looking alpha degrees east
+  var lat;
+  var lng;
 
   init();
   wire();
 
   function wire() {
     $update.on('click', updateView);
+    window.addEventListener('deviceorientation', orientationH, true);
   }
 
   function init() {
@@ -31,8 +43,7 @@ $(document).ready(function(){
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
-    camera.position.z = 45;
-    camera.position.y = 1;
+    //cameraPos(PT_4.lat, PT_4.lng, 0);
 
     var cube = makeCube(GREEN);
     scene.add(cube);
@@ -40,9 +51,22 @@ $(document).ready(function(){
     addCube(LIGHT_GREEN, PT_1);
     addCube(PURPLE, PT_2);
     addCube(ORANGE, PT_3);
+    addCube(MAROON, PT_4);
 
     light();
     render();
+  }
+
+  function orientationH(e) {
+    if (typeof e.alpha !== 'number' && typeof e.webkitCompassHeading !== 'number') {
+      return;
+    }
+
+    var alpha = e.alpha;
+    var compass = e.webkitCompassHeading;
+    dir = (typeof compass === 'number') ? compass : - alpha;
+
+    cameraLookAtUpd();
   }
 
   function addCube(color, pt) {
@@ -72,26 +96,44 @@ $(document).ready(function(){
 
   function updateView() {
     console.log('updating...');
+    console.log('degrees east: ', dir);
 
     navigator.geolocation.getCurrentPosition(function(pos) {
       var coords = pos.coords;
-      var lat = coords.latitude;
-      var lng = coords.longitude;
+      lat = coords.latitude;
+      lng = coords.longitude;
 
-      cameraUpd(lat, lng);
+      cameraPos(lat, lng, 0);
+      render();
     });
   }
 
-  function cameraUpd(lat, lng) {
-    var coords = coordsMap(lat, lng);
-    console.log(lat, lng);
+  function cameraLookAtUpd() {
+    console.log('cameraLookAtUpd');
 
-    camera.position.x = coords.east;
-    camera.position.y = 0;
-    camera.position.z = 0 - coords.north;
-    camera.lookAt(new THREE.Vector3(0,0,0));
-
+    cameraLookAt(dir);
     render();
+  }
+
+  function cameraPos(lat, lng, height) {
+    if (typeof height === 'undefined') {
+      var height = 0;
+    }
+
+    var coords = coordsMap(lat, lng);
+    camera.position.x = coords.east;
+    camera.position.z = 0 - coords.north;
+    camera.position.y = height;
+  }
+
+  // deg: degrees east
+  function cameraLookAt(deg) {
+    var rad = deg * Math.PI / 180;
+    var x = camera.position.x + Math.sin(rad);
+    var z = camera.position.z - Math.cos(rad);
+    var vector = new THREE.Vector3(x,0,z);
+
+    camera.lookAt(vector);
   }
 
   function render() {
