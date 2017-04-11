@@ -12,11 +12,13 @@ $(document).ready(function(){
   var PURPLE = 0x936693;
   var ORANGE = 0xf78909;
   var MAROON = 0x512544;
+  var TEAL = 0x017a8b;
 
   var PT_1 = {lat: 40.714234, lng: -74.006323}// broadway and chambers
   var PT_2 = {lat: 40.731716, lng: -73.991496} // broadway and 10th
   var PT_3 = {lat: 40.728350, lng: -74.002804} // 6th and houston
   var PT_4 = {lat: 40.7329915, lng: -73.9879134}; // 13th and 3rd
+  var PT_5 = {lat: 40.720579, lng: -73.995273}; // cafe integral
 
   var renderer, scene, camera;
 
@@ -52,6 +54,7 @@ $(document).ready(function(){
     addCube(PURPLE, PT_2);
     addCube(ORANGE, PT_3);
     addCube(MAROON, PT_4);
+    addCube(TEAL, PT_5);
 
     light();
     render();
