@@ -103,6 +103,9 @@ $(document).ready(function(){
       lat = coords.latitude;
       lng = coords.longitude;
 
+      console.log('lat: ', lat);
+      console.log('lng: ', lng);
+
       cameraPos(lat, lng, 0);
       render();
     });
