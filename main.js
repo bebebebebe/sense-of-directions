@@ -1,10 +1,6 @@
-// convience, for demo
-eg_lat = 40.731716;
-eg_lng = -73.991496;
-
-
 $(document).ready(function(){
   $update = $('#update');
+  $container = $('#container');
 
   var LIGHT_BLUE = 0xe1fffe;
   var LIGHT_GREEN = 0x8cb082;
@@ -13,6 +9,10 @@ $(document).ready(function(){
   var ORANGE = 0xf78909;
   var MAROON = 0x512544;
   var TEAL = 0x017a8b;
+
+  var GRAY = 0x808080;
+  var LIGHT_GRAY = 0xd3d3d3;
+  var WHITE = 0xffffff;
 
   var PT_1 = {lat: 40.714234, lng: -74.006323}// broadway and chambers
   var PT_2 = {lat: 40.731716, lng: -73.991496} // broadway and 10th
@@ -38,14 +38,18 @@ $(document).ready(function(){
     var width = window.innerWidth;
     var height = window.innerHeight;
 
-    renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(width, height);
-    document.body.appendChild(renderer.domElement);
-
     scene = new THREE.Scene();
 
+    scene.fog = new THREE.Fog(WHITE, 0.1, 200);
+    //scene.fog = new THREE.FogExp2(WHITE, 0.01);
+
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(width, height);
+    renderer.setClearColor(LIGHT_GRAY, 1);
+
+    $container.append(renderer.domElement);
+
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
-    //cameraPos(PT_4.lat, PT_4.lng, 0);
 
     var cube = makeCube(GREEN);
     scene.add(cube);
@@ -79,6 +83,7 @@ $(document).ready(function(){
     cube.position.z = 0 - coords.north;
 
     scene.add(cube);
+    return cube;
   }
 
   function makeCube(color) {
@@ -89,11 +94,11 @@ $(document).ready(function(){
   }
 
   function light() {
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-    scene.add(light);
+    var lightA = new THREE.AmbientLight(0x404040); // soft white light
+    scene.add(lightA);
 
-    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    scene.add(light);
+    var lightH = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+    scene.add(lightH);
   }
 
   function updateView() {
