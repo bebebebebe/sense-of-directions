@@ -51,14 +51,14 @@ $(document).ready(function(){
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
 
-    var cube = makeCube(GREEN);
-    scene.add(cube);
+    var marker = makeMarker(GREEN);
+    scene.add(marker);
 
-    addCube(LIGHT_GREEN, PT_1);
-    addCube(PURPLE, PT_2);
-    addCube(ORANGE, PT_3);
-    addCube(MAROON, PT_4);
-    addCube(TEAL, PT_5);
+    addMarker(LIGHT_GREEN, PT_1);
+    addMarker(PURPLE, PT_2);
+    addMarker(ORANGE, PT_3);
+    addMarker(MAROON, PT_4);
+    addMarker(TEAL, PT_5);
 
     light();
     render();
@@ -75,18 +75,18 @@ $(document).ready(function(){
     dir = (typeof compass === 'number') ? compass : - alpha;
   }
 
-  function addCube(color, pt) {
-    var cube = makeCube(color);
+  function addMarker(color, pt) {
+    var marker = makeMarker(color);
     var coords = coordsMap(pt.lat, pt.lng);
 
-    cube.position.x = coords.east;
-    cube.position.z = 0 - coords.north;
+    marker.position.x = coords.east;
+    marker.position.z = 0 - coords.north;
 
-    scene.add(cube);
-    return cube;
+    scene.add(marker);
+    return marker;
   }
 
-  function makeCube(color) {
+  function makeMarker(color) {
     var geometry = new THREE.CubeGeometry(1,15,1);
     var material = new THREE.MeshLambertMaterial({color: color});
    
