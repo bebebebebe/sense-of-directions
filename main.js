@@ -26,6 +26,8 @@ $(document).ready(function(){
   var lat;
   var lng;
 
+  var marker;
+
   init();
   wire();
 
@@ -51,7 +53,12 @@ $(document).ready(function(){
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
 
-    var marker = makeMarker(GREEN);
+
+    var gridHelper = new THREE.GridHelper(300,20);
+    gridHelper.position.y = -8;
+    scene.add(gridHelper);
+
+    marker = makeMarker(GREEN);
     scene.add(marker);
 
     addMarker(LIGHT_GREEN, PT_1);
@@ -87,7 +94,7 @@ $(document).ready(function(){
   }
 
   function makeMarker(color) {
-    var geometry = new THREE.CubeGeometry(1,15,1);
+    var geometry = new THREE.CubeGeometry(1,16,1);
     var material = new THREE.MeshLambertMaterial({color: color});
    
     return new THREE.Mesh(geometry, material);
@@ -194,5 +201,6 @@ $(document).ready(function(){
   }
 
   window.camera = camera;
+  window.marker = marker;
 
 });
