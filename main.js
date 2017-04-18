@@ -20,11 +20,21 @@ $(document).ready(function(){
   var PT_4 = {lat: 40.7329915, lng: -73.9879134}; // 13th and 3rd
   var PT_5 = {lat: 40.720579, lng: -73.995273}; // cafe integral
 
+  // RC coords used as map origin
+  var ORIGIN_LNG = -74.001002;
+  var ORIGIN_LAT = 40.720878;
+
+  var MAP_WIDTH = 1000000;
+  var MAP_HEIGHT = 1000000;
+
+
   var renderer, scene, camera;
 
   var dir = 0; // you are looking alpha degrees east
   var lat;
   var lng;
+
+  var proj;
 
   var marker;
 
@@ -52,6 +62,8 @@ $(document).ready(function(){
     $container.append(renderer.domElement);
 
     camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 10000);
+
+    proj = new Proj(MAP_WIDTH, MAP_HEIGHT, ORIGIN_LAT, ORIGIN_LNG);
 
 
     var gridHelper = new THREE.GridHelper(300,20);
@@ -84,7 +96,7 @@ $(document).ready(function(){
 
   function addMarker(color, pt) {
     var marker = makeMarker(color);
-    var coords = coordsMap(pt.lat, pt.lng);
+    var coords = proj.coordsMap(pt.lat, pt.lng);
 
     marker.position.x = coords.east;
     marker.position.z = 0 - coords.north;
@@ -129,7 +141,7 @@ $(document).ready(function(){
       var height = 0;
     }
 
-    var coords = coordsMap(lat, lng);
+    var coords = proj.coordsMap(lat, lng);
     camera.position.x = coords.east;
     camera.position.z = 0 - coords.north;
     camera.position.y = height;
@@ -160,7 +172,7 @@ $(document).ready(function(){
   window.render = render;
 
   window.cameraPosLL = function(lat, lng) {
-    var coords = coordsMap(lat, lng);
+    var coords = proj.coordsMap(lat, lng);
 
     cameraPos(coords.east, 0, 0 - coords.north);
   }
