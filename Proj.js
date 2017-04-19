@@ -1,4 +1,5 @@
 ;(function(exports) {
+  "use strict";
 
   exports.Proj = function(mapWidth, mapHeight, originLat, originLng) {
     this.mapWidth = mapWidth;
