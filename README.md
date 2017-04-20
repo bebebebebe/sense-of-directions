@@ -12,7 +12,7 @@ Three.js is used to represent locations of some points in the world, using a pro
 - 13th and Third Ave (maroon)
 - Park Slope Food Coop, Brooklyn (teal)
 
-There is a "toggle view" button, that lets you switch between a dark theme, a light theme (which includes a grid representing the ground), and a bird's eye view. There is an "update" button, that lets you update your position, assuming location data is available and permittted in your browser. Your phone's compass is used to update the view depending on what direction the phone facing.
+There is a "toggle view" button, that lets you switch between a dark theme, a light theme (which includes a grid representing the ground), and a bird's eye view. There is an "update" button, that lets you update your position, assuming location data is available and permittted in your browser. Your phone's compass is used to update the view depending on what direction the phone is facing.
 
 ### Compatibility/Device Note
 
