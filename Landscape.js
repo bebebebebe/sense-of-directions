@@ -27,6 +27,7 @@
     PT_5: {lat: 40.720579,  lng: -73.995273},   // cafe integral
 
     PT_6: {lat: 40.674977, lng: -73.976649},    // PSFC
+    PT_7: {lat: 40.714234, lng: -73.989566},    // jajaja restaurant
 
     // RC coords used as map origin
     ORIGIN_LNG:   -74.001002,
@@ -138,6 +139,7 @@
       this.addMarker(this.TEAL, this.PT_5);
 
       this.addMarker(this.TEAL, this.PT_6);
+      this.addMarker(this.ORANGE, this.PT_7);
     },
 
     cameraPos: function(lat, lng, height) {
