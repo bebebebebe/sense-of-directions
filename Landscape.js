@@ -7,27 +7,10 @@
   };
 
   Landscape.prototype = {
-    LIGHT_BLUE:   0xe1fffe,
-    LIGHT_GREEN:  0x8cb082,
-    GREEN:        0x00ff00,
-    PURPLE:       0x936693,
-    ORANGE:       0xf78909,
-    MAROON:       0x512544,
-    TEAL:         0x017a8b,
-
     BLACK:        0x000000,
     GRAY:         0x808080,
     LIGHT_GRAY:   0xd3d3d3,
     WHITE:        0xffffff,
-
-    PT_1: {lat: 40.714234,  lng: -74.006323},   // broadway and chambers
-    PT_2: {lat: 40.731716,  lng: -73.991496},   // broadway and 10th
-    PT_3: {lat: 40.728350,  lng: -74.002804},   // 6th and houston
-    PT_4: {lat: 40.7329915, lng: -73.9879134},  // 13th and 3rd
-    PT_5: {lat: 40.720579,  lng: -73.995273},   // cafe integral
-
-    PT_6: {lat: 40.674977, lng: -73.976649},    // PSFC
-    PT_7: {lat: 40.714234, lng: -73.989566},    // jajaja restaurant
 
     // RC coords used as map origin
     ORIGIN_LNG:   -74.001002,
@@ -76,7 +59,10 @@
       this.lat = this.ORIGIN_LAT;
       this.lng = this.ORIGIN_LNG;
 
-      this.addMarkers();
+      this.markerUtil = new MarkerUtil();
+      this.markerDataA = this.markerUtil.defaultSet; // TODO: when have db, if it has any markers, set markerDataA from it instead
+
+      this.addMarkers(this.markerDataA);
       this.light();
       this.viewTypeSet(0);
 
@@ -110,6 +96,12 @@
       this.grid = null;
     },
 
+    newMarker: function(markerData) {
+      this.markerDataA.push(markerData);
+      // todo: when have db, also add new element to db here
+      this.addMarker(markerData);
+    },
+
     createMarker: function(color) {
       var geometry = new THREE.CubeGeometry(1, 16, 1);
       var material = new THREE.MeshLambertMaterial({color: color});
@@ -117,29 +109,24 @@
       return new THREE.Mesh(geometry, material);
     },
 
-    addMarker: function(color, geocoords) {
-      var marker = this.createMarker(color);
-      var coords = this.proj.coordsMap(geocoords.lat, geocoords.lng);
+    // markerData: MarkerData object
+    addMarker: function(markerData) {
+      var marker = this.createMarker(markerData.color);
+      var coords = this.proj.coordsMap(markerData.lat, markerData.lng);
 
       marker.position.x = coords.east;
+      marker.position.y = 0;
       marker.position.z = 0 - coords.north;
 
       this.scene.add(marker);
       return marker;
     },
 
-    addMarkers: function() {
-      var marker = this.createMarker(this.GREEN);
-      this.scene.add(marker);
-
-      this.addMarker(this.LIGHT_GREEN, this.PT_1);
-      this.addMarker(this.PURPLE, this.PT_2);
-      this.addMarker(this.ORANGE, this.PT_3);
-      this.addMarker(this.MAROON, this.PT_4);
-      this.addMarker(this.TEAL, this.PT_5);
-
-      this.addMarker(this.TEAL, this.PT_6);
-      this.addMarker(this.ORANGE, this.PT_7);
+    // markerDataA: array of MarkerData objects
+    addMarkers: function(markerDataA) {
+      for (var i=0; i<markerDataA.length; i++) {
+        this.addMarker(markerDataA[i]);
+      }
     },
 
     cameraPos: function(lat, lng, height) {
@@ -245,6 +232,14 @@
 
       this.camera.position.y = height;
       this.camera.lookAt(below);
+    },
+
+    // convenience method, for use in dev console
+    logMarkerData: function() {
+      this.markerDataA.forEach(function(marker) {
+        var hexColor = '#' + (marker.color).toString(16);
+        console.log("%c" + marker.name, "color:" + hexColor);
+      });
     },
 
     render: function() {
