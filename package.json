@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "babel": {
     "presets": [
-      "env"
+      "env",
+      "react"
     ]
   },
   "description": "This web app is to be used on your phone, while walking around. Try it out <a href='https://bebebebebe.github.io/sense-of-directions/'>here</a> (see device note below). It is intended to help train a sense of directions. That is, to help you build a \"mental model\" of some positions in space. Hold your phone up to see colored markers in the direction of certain places, with markers appearing larger if they are closer to you.",
@@ -25,12 +26,17 @@
   },
   "homepage": "https://github.com/bebebebebe/sense-of-directions#readme",
   "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
     "babel-preset-env": "^1.4.0",
+    "babel-preset-react": "^6.24.1",
     "serve": "^5.1.4",
     "webpack": "^2.4.1"
   },
   "dependencies": {
     "jquery": "^3.2.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "three": "^0.85.2"
   }
 }
