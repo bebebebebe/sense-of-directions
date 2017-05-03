@@ -1,254 +1,267 @@
-;(function(exports) {
-  "use strict";
+import $ from 'jquery';
+import {Scene, PerspectiveCamera, WebGLRenderer, AmbientLight, HemisphereLight, GridHelper, CubeGeometry, Mesh, MeshLambertMaterial, Vector3} from 'three';
+import {default as Proj} from './Proj.js';
+import {MarkerUtil} from './MarkerUtil.js';
 
-  exports.Landscape = function() {
-    this.init();
-    this.wire();
-  };
+const THREE = {
+  Scene: Scene,
+  PerspectiveCamera: PerspectiveCamera,
+  WebGLRenderer: WebGLRenderer,
+  HemisphereLight: HemisphereLight,
+  AmbientLight: AmbientLight,
+  GridHelper: GridHelper,
+  Mesh: Mesh,
+  MeshLambertMaterial: MeshLambertMaterial,
+  CubeGeometry: CubeGeometry,
+  Vector3: Vector3
+};
 
-  Landscape.prototype = {
-    BLACK:        0x000000,
-    GRAY:         0x808080,
-    LIGHT_GRAY:   0xd3d3d3,
-    WHITE:        0xffffff,
+export default function Landscape() {
+  this.init();
+  this.wire();
+};
 
-    // RC coords used as map origin
-    ORIGIN_LNG:   -74.001002,
-    ORIGIN_LAT:   40.720878,
+Landscape.prototype = {
+  BLACK:        0x000000,
+  GRAY:         0x808080,
+  LIGHT_GRAY:   0xd3d3d3,
+  WHITE:        0xffffff,
 
-    MAP_WIDTH:    1000000,
-    MAP_HEIGHT:   1000000,
+  // RC coords used as map origin
+  ORIGIN_LNG:   -74.001002,
+  ORIGIN_LAT:   40.720878,
 
-    BEV_HEIGHT: 150, // how high up for bird's eye view
+  MAP_WIDTH:    1000000,
+  MAP_HEIGHT:   1000000,
 
-    renderer: null,
-    scene: null,
-    camera: null,
-    grid: null,
+  BEV_HEIGHT: 150, // how high up for bird's eye view
 
-    dir: null,
-    lat: null,
-    lng: null,
-    proj: null,
+  renderer: null,
+  scene: null,
+  camera: null,
+  grid: null,
 
-    viewType: null, // integer, representing view type in map below
-    viewTypeMap: { // map of view types to description
-      0: 'light theme',
-      1: 'dark theme',
-      2: 'bird\'s eye view, dark theme'
-    },
+  dir: null,
+  lat: null,
+  lng: null,
+  proj: null,
 
-    init: function() {
-      this.$update = $('#update');
-      this.$viewToggle = $('#view-toggle');
-      this.$container = $('#container');
+  viewType: null, // integer, representing view type in map below
+  viewTypeMap: { // map of view types to description
+    0: 'light theme',
+    1: 'dark theme',
+    2: 'bird\'s eye view, dark theme'
+  },
 
-      this.width = window.innerWidth;
-      this.height = window.innerHeight;
-      this.aspect = this.width / this.height;
+  init: function() {
+    this.$update = $('#update');
+    this.$viewToggle = $('#view-toggle');
+    this.$container = $('#container');
 
-      this.scene = new THREE.Scene();
-      this.camera = new THREE.PerspectiveCamera(75, this.aspect, 0.1, 10000);
-      this.renderer = new THREE.WebGLRenderer({antialias: true});
-      this.renderer.setSize(this.width, this.height);
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.aspect = this.width / this.height;
 
-      this.proj = new Proj(
-          this.MAP_WIDTH, this.MAP_HEIGHT, this.ORIGIN_LAT, this.ORIGIN_LNG
-      );
-      this.dir = 0;
-      this.lat = this.ORIGIN_LAT;
-      this.lng = this.ORIGIN_LNG;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(75, this.aspect, 0.1, 10000);
+    this.renderer = new THREE.WebGLRenderer({antialias: true});
+    this.renderer.setSize(this.width, this.height);
 
-      this.markerUtil = new MarkerUtil();
-      this.markerDataA = this.markerUtil.defaultSet; // TODO: when have db, if it has any markers, set markerDataA from it instead
+    this.proj = new Proj(
+        this.MAP_WIDTH, this.MAP_HEIGHT, this.ORIGIN_LAT, this.ORIGIN_LNG
+    );
+    this.dir = 0;
+    this.lat = this.ORIGIN_LAT;
+    this.lng = this.ORIGIN_LNG;
 
-      this.addMarkers(this.markerDataA);
-      this.light();
-      this.viewTypeSet(0);
+    this.markerUtil = new MarkerUtil();
+    this.markerDataA = this.markerUtil.defaultSet; // TODO: when have db, if it has any markers, set markerDataA from it instead
 
-      this.$container.append(this.renderer.domElement);
-      this.render();
-    },
+    this.addMarkers(this.markerDataA);
+    this.light();
+    this.viewTypeSet(0);
 
-    wire: function() {
-      this.$update.on('click', this.updateH.bind(this));
-      this.$viewToggle.on('click', this.viewToggleH.bind(this));
-      window.addEventListener('deviceorientation', this.orientationH.bind(this), true);
-    },
+    this.$container.append(this.renderer.domElement);
+    this.render();
+  },
 
-    light: function() {
-      var lightA = new THREE.AmbientLight(0x404040);
-      this.scene.add(lightA);
+  wire: function() {
+    this.$update.on('click', this.updateH.bind(this));
+    this.$viewToggle.on('click', this.viewToggleH.bind(this));
+    window.addEventListener('deviceorientation', this.orientationH.bind(this), true);
+  },
 
-      var lightH = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
-      this.scene.add(lightH);
-    },
+  light: function() {
+    var lightA = new THREE.AmbientLight(0x404040);
+    this.scene.add(lightA);
 
-    addGrid: function() {
-      this.grid = new THREE.GridHelper(300, 20);
-      this.grid.position.y = -8;
+    var lightH = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+    this.scene.add(lightH);
+  },
 
-      this.scene.add(this.grid);
-    },
+  addGrid: function() {
+    this.grid = new THREE.GridHelper(300, 20);
+    this.grid.position.y = -8;
 
-    removeGrid: function() {
-      this.scene.remove(this.grid);
-      this.grid = null;
-    },
+    this.scene.add(this.grid);
+  },
 
-    newMarker: function(markerData) {
-      this.markerDataA.push(markerData);
-      // todo: when have db, also add new element to db here
-      this.addMarker(markerData);
-    },
+  removeGrid: function() {
+    this.scene.remove(this.grid);
+    this.grid = null;
+  },
 
-    createMarker: function(color) {
-      var geometry = new THREE.CubeGeometry(1, 16, 1);
-      var material = new THREE.MeshLambertMaterial({color: color});
+  newMarker: function(markerData) {
+    this.markerDataA.push(markerData);
+    // todo: when have db, also add new element to db here
+    this.addMarker(markerData);
+  },
 
-      return new THREE.Mesh(geometry, material);
-    },
+  createMarker: function(color) {
+    var geometry = new THREE.CubeGeometry(1, 16, 1);
+    var material = new THREE.MeshLambertMaterial({color: color});
 
-    // markerData: MarkerData object
-    addMarker: function(markerData) {
-      var marker = this.createMarker(markerData.color);
-      var coords = this.proj.coordsMap(markerData.lat, markerData.lng);
+    return new THREE.Mesh(geometry, material);
+  },
 
-      marker.position.x = coords.east;
-      marker.position.y = 0;
-      marker.position.z = 0 - coords.north;
+  // markerData: MarkerData object
+  addMarker: function(markerData) {
+    var marker = this.createMarker(markerData.color);
+    var coords = this.proj.coordsMap(markerData.lat, markerData.lng);
 
-      this.scene.add(marker);
-      return marker;
-    },
+    marker.position.x = coords.east;
+    marker.position.y = 0;
+    marker.position.z = 0 - coords.north;
 
-    // markerDataA: array of MarkerData objects
-    addMarkers: function(markerDataA) {
-      for (var i=0; i<markerDataA.length; i++) {
-        this.addMarker(markerDataA[i]);
-      }
-    },
+    this.scene.add(marker);
+    return marker;
+  },
 
-    cameraPos: function(lat, lng, height) {
-      if (typeof height === 'undefined') {
-        var height = (this.viewType == 2) ? this.BEV_HEIGHT : 0;
-      }
+  // markerDataA: array of MarkerData objects
+  addMarkers: function(markerDataA) {
+    for (var i=0; i<markerDataA.length; i++) {
+      this.addMarker(markerDataA[i]);
+    }
+  },
 
-      var coords = this.proj.coordsMap(lat, lng);
+  cameraPos: function(lat, lng, height) {
+    if (typeof height === 'undefined') {
+      var height = (this.viewType == 2) ? this.BEV_HEIGHT : 0;
+    }
 
-      this.camera.position.x = coords.east;
-      this.camera.position.z = 0 - coords.north;
-      this.camera.position.y = height;
-    },
+    var coords = this.proj.coordsMap(lat, lng);
 
-    cameraLookAt: function(deg) {
-      var rad = this.proj.rad(deg);
-      var x = this.camera.position.x + Math.sin(rad);
-      var z = this.camera.position.z - Math.cos(rad);
+    this.camera.position.x = coords.east;
+    this.camera.position.z = 0 - coords.north;
+    this.camera.position.y = height;
+  },
 
-      var vector = new THREE.Vector3(x, 0, z);
+  cameraLookAt: function(deg) {
+    var rad = this.proj.rad(deg);
+    var x = this.camera.position.x + Math.sin(rad);
+    var z = this.camera.position.z - Math.cos(rad);
 
-      this.camera.lookAt(vector);
-    },
+    var vector = new THREE.Vector3(x, 0, z);
 
-    orientationH: function(e) {
-      if (typeof e.alpha !== 'number' && typeof e.webkitCompassHeading !== 'number') {
-        return;
-      }
+    this.camera.lookAt(vector);
+  },
 
-      var alpha = e.alpha;
-      var compass = e.webkitCompassHeading;
+  orientationH: function(e) {
+    if (typeof e.alpha !== 'number' && typeof e.webkitCompassHeading !== 'number') {
+      return;
+    }
 
-      this.dir = (typeof compass === 'number') ? compass : - alpha;
-    },
+    var alpha = e.alpha;
+    var compass = e.webkitCompassHeading;
 
-    viewTypeSet: function(n) {
-      console.log('update to type: ', this.viewTypeMap[n]);
+    this.dir = (typeof compass === 'number') ? compass : - alpha;
+  },
 
-      switch(n) {
-        case 0: // light theme
-          this.viewType = 0;
-          this.renderer.setClearColor(this.LIGHT_GRAY, 1);
-          if (this.grid === null) this.addGrid();
+  viewTypeSet: function(n) {
+    console.log('update to type: ', this.viewTypeMap[n]);
 
-          this.camera.position.y = 0;
-          //this.scene.fog = new THREE.Fog(this.White, 0,1, 200);
-          break;
+    switch(n) {
+      case 0: // light theme
+        this.viewType = 0;
+        this.renderer.setClearColor(this.LIGHT_GRAY, 1);
+        if (this.grid === null) this.addGrid();
 
-        case 1: // dark theme
-          this.viewType = 1;
-          this.renderer.setClearColor(this.BLACK, 1);
-          if (this.grid !== null) this.removeGrid();
+        this.camera.position.y = 0;
+        //this.scene.fog = new THREE.Fog(this.White, 0,1, 200);
+        break;
 
-          this.camera.position.y = 0;
-          break;
+      case 1: // dark theme
+        this.viewType = 1;
+        this.renderer.setClearColor(this.BLACK, 1);
+        if (this.grid !== null) this.removeGrid();
 
-        case 2: // bird's eye view
-          this.viewType = 2;
-          this.renderer.setClearColor(this.BLACK, 1);
-          if (this.grid !== null) this.removeGrid();
+        this.camera.position.y = 0;
+        break;
 
-          this.bev(this.BEV_HEIGHT);
-          break;
+      case 2: // bird's eye view
+        this.viewType = 2;
+        this.renderer.setClearColor(this.BLACK, 1);
+        if (this.grid !== null) this.removeGrid();
 
-        default:
-          throw new Error('view type not supported');
-      }
-    },
+        this.bev(this.BEV_HEIGHT);
+        break;
 
-    viewToggleH: function() {
-      var map = { // from type: to type (see this.viewTypeMap for descriptions)
-        0: 1,
-        1: 2,
-        2: 0
-      };
+      default:
+        throw new Error('view type not supported');
+    }
+  },
 
-      if (typeof map[this.viewType] === 'undefined') {
-        throw new Error('type not supported by toggle handler');
-      }
-      else {
-        this.viewTypeSet(map[this.viewType]);
-      }
-    },
+  viewToggleH: function() {
+    var map = { // from type: to type (see this.viewTypeMap for descriptions)
+      0: 1,
+      1: 2,
+      2: 0
+    };
 
-    updateH: function() {
-      window.navigator.geolocation.getCurrentPosition(function(pos) {
-        var coords = pos.coords;
+    if (typeof map[this.viewType] === 'undefined') {
+      throw new Error('type not supported by toggle handler');
+    }
+    else {
+      this.viewTypeSet(map[this.viewType]);
+    }
+  },
 
-        this.lat = coords.latitude;
-        this.lng = coords.longitude;
+  updateH: function() {
+    window.navigator.geolocation.getCurrentPosition(function(pos) {
+      var coords = pos.coords;
 
-        console.log('lat: ', this.lat);
-        console.log('lng: ', this.lng);
+      this.lat = coords.latitude;
+      this.lng = coords.longitude;
 
-        this.cameraPos(this.lat, this.lng);
-      }.bind(this));
-    },
+      console.log('lat: ', this.lat);
+      console.log('lng: ', this.lng);
 
-    bev: function(height) {
-      var x = this.camera.position.x;
-      var z = this.camera.position.z;
-      var below = new THREE.Vector3(x, 0, z);
+      this.cameraPos(this.lat, this.lng);
+    }.bind(this));
+  },
 
-      this.camera.position.y = height;
-      this.camera.lookAt(below);
-    },
+  bev: function(height) {
+    var x = this.camera.position.x;
+    var z = this.camera.position.z;
+    var below = new THREE.Vector3(x, 0, z);
 
-    // convenience method, for use in dev console
-    logMarkerData: function() {
-      this.markerDataA.forEach(function(marker) {
-        var hexColor = '#' + (marker.color).toString(16);
-        console.log("%c" + marker.name, "color:" + hexColor);
-      });
-    },
+    this.camera.position.y = height;
+    this.camera.lookAt(below);
+  },
 
-    render: function() {
-      window.requestAnimationFrame(this.render.bind(this));
+  // convenience method, for use in dev console
+  logMarkerData: function() {
+    this.markerDataA.forEach(function(marker) {
+      var hexColor = '#' + (marker.color).toString(16);
+      console.log("%c" + marker.name, "color:" + hexColor);
+    });
+  },
 
-      this.cameraLookAt(this.dir);
+  render: function() {
+    window.requestAnimationFrame(this.render.bind(this));
 
-      this.renderer.render(this.scene, this.camera);
-    },
-  };
+    this.cameraLookAt(this.dir);
 
-}(this));
+    this.renderer.render(this.scene, this.camera);
+  },
+};
