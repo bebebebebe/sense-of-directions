@@ -4,7 +4,7 @@ import {default as Landscape} from './Landscape.js'
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import {Map} from './components/map.js'
+import {Map} from './components/Map.js'
 
 $(document).ready(function(){
 
@@ -13,7 +13,7 @@ $(document).ready(function(){
     document.getElementById('map-container')
   );
 
-  window.landscape = new Landscape();
+//  window.landscape = new Landscape();
 
   $(document).on('touchmove', function(e) {
     e.preventDefault(); // prevent scroll effect

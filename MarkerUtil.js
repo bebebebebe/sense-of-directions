@@ -69,4 +69,25 @@ Object.defineProperty(MarkerUtil.prototype, 'defaultSet', {
   }
 });
 
-export {MarkerUtil, MarkerData, GeoPoint};
+// in progress experimenting, for map view
+// same data as above, with a different representation
+// TODO: consolidate to one way of representing data, for shared state
+// between map view and orientation view
+
+var mu = new MarkerUtil();
+
+const markersArray = [
+  {geocoords: mu.PT_0, color: mu.GREEN, name: 'RC'},
+  {geocoords: mu.PT_1, color: mu.LIGHT_GREEN, name: 'Broadway and Chambers'},
+  {geocoords: mu.PT_2, color: mu.PURPLE, name: 'Broadway and 10th'},
+  {geocoords: mu.PT_3, color: mu.ORANGE, name: '6th and Houston'},
+  {geocoords: mu.PT_4, color: mu.MAROON, name: 'E. 13th and 3rd Ave'},
+  {geocoords: mu.PT_5, color: mu.TEAL, name: 'Cafe Integral'},
+  {geocoords: mu.PT_6, color: mu.TEAL, name: 'Park Slope Food Coop'},
+];
+
+function cssHexString(num) {
+  return '#' + ('00000' + (num | 0).toString(16)).substr(-6);
+}
+
+export {MarkerUtil, MarkerData, GeoPoint, markersArray, cssHexString};

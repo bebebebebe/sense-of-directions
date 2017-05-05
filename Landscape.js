@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import {Scene, PerspectiveCamera, WebGLRenderer, AmbientLight, HemisphereLight, GridHelper, CubeGeometry, Mesh, MeshLambertMaterial, Vector3} from 'three';
 import {default as Proj} from './Proj.js';
-import {MarkerUtil} from './MarkerUtil.js';
+import {MarkerUtil, cssHexString} from './MarkerUtil.js';
 
 const THREE = {
   Scene: Scene,
@@ -252,8 +252,7 @@ Landscape.prototype = {
   // convenience method, for use in dev console
   logMarkerData: function() {
     this.markerDataA.forEach(function(marker) {
-      var hexColor = '#' + (marker.color).toString(16);
-      console.log("%c" + marker.name, "color:" + hexColor);
+      console.log("%c" + marker.name, "color:" + cssHexString(marker.color));
     });
   },
 
