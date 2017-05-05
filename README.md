@@ -29,9 +29,9 @@ From the main directory, do `npm install`. Then to build, do `npm run build`. Th
 
 To set up watch, so that you don't have to rebuild after each change to a JS file, do `webpack --progress --watch`. In another terminal window, do `npm start`, and follow the directions there to see your app as you modify it. 
 
-### Notes on Future Plans
+### Notes on In Progress Work
 
-- I'm planning to let the user add markers at locations via a map view, and to provide data about each marker with a toggleable info view.
+- I'm planning to let the user add markers at locations via a map view, and to provide data about each marker with a toggleable info view. This is in progress on branch `map`.
 
 - So far I've been finding that the dark theme, without the ground grid, works a lot better at making me form a "mental picture" of where things are in space. I'm not completely sure why, and am interested in figuring it out to see if there are ways to further improve the advantages of the dark theme.
 
