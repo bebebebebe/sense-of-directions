@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMapboxGl, {Layer, Feature, Marker} from 'react-mapbox-gl';
-import {markersArray, cssHexString} from '../MarkerUtil.js';
+import {cssHexString} from '../MarkerUtil.js';
 
 const MAPBOX_TOKEN = "pk.eyJ1IjoiYmViZWJlIiwiYSI6ImNqMjVjcmVleDAwNzYycXBjcDcwbWQwYXUifQ.3Uxev45SWOJ7jOebH_OmLg";
 const CENTER_DEFAULT = [-74.001002, 40.720878] // lng, lat of RC to center map by default
@@ -24,7 +24,7 @@ class Map extends React.Component {
           width: "100vw"
         }}>
 
-        <MapMarkerCollection data={markersArray} />
+        <MapMarkerCollection markers={this.props.markers} />
 
       </ReactMapboxGl>
     );
@@ -61,14 +61,18 @@ class MapMarker extends React.Component {
 
 class MapMarkerCollection extends React.Component {
 
+  makeMapMarker(marker) {
+    return <MapMarker
+      coordinates={[marker.geocoords.lng, marker.geocoords.lat]}
+      color={cssHexString(marker.color)}
+      name={marker.name}
+    />
+  }
+
   render() {
-    var markers = this.props.data.map(function(marker) {
-      return <MapMarker
-        coordinates={[marker.geocoords.lng, marker.geocoords.lat]}
-        color={cssHexString(marker.color)}
-        name={marker.name}
-      />
-    });
+    var markers = this.props.markers.map(function(marker) {
+      return this.makeMapMarker(marker);
+    }.bind(this));
 
     return (
       <div>{markers}</div>

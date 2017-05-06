@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import {default as Landscape} from './Landscape.js'
 
+import {markersArray} from './MarkerUtil.js';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -9,7 +11,7 @@ import {Map} from './components/Map.js'
 $(document).ready(function(){
 
   ReactDOM.render(
-    <Map />,
+    <Map markers={markersArray} />,
     document.getElementById('map-container')
   );
 
